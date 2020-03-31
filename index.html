@@ -1,1 +1,207 @@
-Hello World
+
+<!DOCTYPE html>
+<html lang="de">
+	<head>
+		<title>Sort test</title>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!--Welcome to Sytnax Gore in the variables names-->
+    <meta charset="utf-8"/>
+    <style>
+      <!-- table { -->
+        <!-- counter-reset: rowNumber; -->
+      <!-- } -->
+
+      <!-- table > tbody tr { -->
+          <!-- counter-increment: rowNumber; -->
+      <!-- } -->
+
+      <!-- table tr td:first-child::before { -->
+          <!-- content: counter(rowNumber); -->
+          <!-- min-width: 1em; -->
+          <!-- margin-right: 0.5em; -->
+      <!-- } -->
+      .container {
+        padding: 1rem;
+        margin: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 16px;
+      }
+    </style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+  
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+  </head>
+	<body onload="initialize()">
+		<script>
+			var file, fr, xmlDoc, parser;
+      var fileText;
+      
+      //var completed_list = [];
+      
+      var anime_dict = {};
+      var rank_dict = {};
+      
+      var possibilities_arr = []; //Object.keys(rank_dict);
+      var combination_arr = [];
+      
+      var id_a = '';
+      var id_b = '';
+      
+			function initialize() {
+      };
+			
+			function loadFile() {
+				//alert('test');
+				
+				var fileinput = document.getElementById('inputXml');
+				if(!fileinput.files){
+					alert('no support for files');
+				}
+				else if(!fileinput.files[0]){
+					alert('no files found');
+				}
+				else {
+					file = fileinput.files[0];
+					//console.log(file);
+					fr = new FileReader();
+					fr.onload = loadedText;
+					fr.readAsText(file);
+				}
+			};
+			
+			function loadedText() {
+				//console.log("loadedText");
+        //console.log(fr.result);
+        parser = new DOMParser();
+				xmlDoc = parser.parseFromString(fr.result, "text/xml");
+        //console.log(xmlDoc);
+        //var allAnime = xmlDoc.getElementsByTagName("anime");
+        //console.log(allAnime);
+        
+        var allCompletedAnime = xmlDoc.evaluate("/myanimelist/anime[my_status='Completed']", xmlDoc, null, XPathResult.ANY_TYPE,null); 
+        //console.log(allCompletedAnime);
+        var singleresult = allCompletedAnime.iterateNext();
+        //completed_list = [];
+        
+        anime_dict = {};
+        rank_dict = {};
+        
+        while(singleresult){
+          //console.log(singleresult.textContent);
+          //completed_list.push(singleresult);
+          
+          var id = singleresult.getElementsByTagName("series_animedb_id")[0].childNodes[0].nodeValue;
+          anime_dict[id] = singleresult;
+          rank_dict[id] = 1000;
+          
+          singleresult = allCompletedAnime.iterateNext();
+        }
+        //save all possibilites of rank ids
+        possibilities_arr = Object.keys(rank_dict);
+        combination_arr = possibilities_arr.flatMap((v, i) => possibilities_arr.slice(i+1).map( w => v + ',' + w ));
+        
+        updateTable()
+        //console.log(xmlDoc.getElementsByTagName("anime")[0].childNodes);
+        //console.log(xmlDoc.getElementsByTagName("anime")[0].childNodes[0]);
+        //console.log(xmlDoc.getElementsByTagName("anime").getElementsByTagName("series_title")[0].childNodes[0].nodeValue);
+			}
+			
+			function addTableRow(animeElem, rankElem) {
+        var id = animeElem.getElementsByTagName("series_animedb_id")[0].childNodes[0].nodeValue;
+        var name = animeElem.getElementsByTagName("series_title")[0].childNodes[0].nodeValue;
+        var score = animeElem.getElementsByTagName("my_score")[0].childNodes[0].nodeValue;
+        var table = document.getElementById('bodyTable');
+        
+        var row = table.insertRow(-1);
+        var ce1 = row.insertCell(0);
+        var ce2 = row.insertCell(1);
+        var ce3 = row.insertCell(2);
+        var ce4 = row.insertCell(3);
+        
+        ce1.innerHTML = name;
+        ce2.innerHTML = score;
+        ce3.innerHTML = id;
+        ce4.innerHTML = rankElem;
+      }
+      
+      function updateTable() {
+        //remove children of table
+        var table = document.getElementById('bodyTable');
+        table.textContent = '';
+        //for( var i = 0; i < completed_list.length; i++) {
+        //  addTableRow(completed_list[i]);
+        //}
+        for(var id in anime_dict) {
+          var anime_element = anime_dict[id];
+          var rank_element = rank_dict[id];
+          addTableRow(anime_element, rank_element);
+        }
+        rank_dict[47] = rank_dict[47]+1;
+        
+        $('#contentTable').DataTable();
+      }
+      
+      function pickChoices() {
+        var rng_index = Math.floor(Math.random() * combination_arr.length);
+        var comb = combination_arr[rng_index].split(',');;
+        id_a = comb[0];
+        id_b = comb[1];
+        
+        combination_arr.splice(rng_index, 1);
+        
+        displayChoices();
+      }
+			
+      function displayChoices() {
+        var a_lbl = document.getElementById('choice_a_lbl');
+        a_lbl.textContent = id_a;
+        
+        var b_lbl = document.getElementById('choice_b_lbl');
+        b_lbl.textContent = id_b;
+      
+      }
+			
+		</script>
+    <div class="container" id="title_div">
+      <p>Hello World</p>
+    </div>
+    <div id="wrapper">
+      <div class="container" >
+        <div id="input_div">
+          <input id="inputXml" type="file" accept="text/xml" onchange="loadFile()"> 
+          <!-- <input id="inputSubmit" type="button" value="Datei laden" onclick="loadFile()"> -->
+        </div>
+      </div>
+      
+      <div class="container" id="choice_div" style="display: flex;">
+        <div class="container" id="choice_a" style="flex: 1;">
+          <p id="choice_a_lbl">Choice A</p>
+          <input type="button" onclick="pickChoices()" value="Choice A" >
+          
+        </div>
+        <div class="container" id="choice_b" style="flex: 1;">
+          <p id="choice_b_lbl">Choice B</p>
+          <input type="button" onclick="" value="Choice A" disabled>
+        </div>
+      </div>
+      
+      
+      <div class="container" id="content">
+        <input id="updateTable" type="button" value="Aktualisiere Table" onclick="updateTable()">
+        <table id="contentTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Score</th>
+              <th>Details</th>
+              <th>Rank</th>
+            </tr>
+          </thead>
+          <tbody id="bodyTable">
+          </tbody>
+        </table>
+      
+      </div>
+    </div>
+	</body>
+</html>
