@@ -47,6 +47,8 @@
       var id_a = '';
       var id_b = '';
       
+      var k = 24;
+      
 			function initialize() {
       };
 			
@@ -122,6 +124,8 @@
         ce2.innerHTML = score;
         ce3.innerHTML = id;
         ce4.innerHTML = rankElem;
+        
+        //console.log(name+': '+ rankElem);
       }
       
       function updateTable() {
@@ -136,29 +140,79 @@
           var rank_element = rank_dict[id];
           addTableRow(anime_element, rank_element);
         }
-        rank_dict[47] = rank_dict[47]+1;
+        //rank_dict[47] = rank_dict[47]+1;
         
+        $('#contentTable').DataTable().clear();
         $('#contentTable').DataTable();
+        
+        $("#toggle_div").show();
+        
+        pickChoices();
+        
       }
       
       function pickChoices() {
         var rng_index = Math.floor(Math.random() * combination_arr.length);
-        var comb = combination_arr[rng_index].split(',');;
-        id_a = comb[0];
-        id_b = comb[1];
+        var comb_item = combination_arr[rng_index];
+        //console.log(comb_item);
+        if(!comb_item){
+          $("#btn_A").prop('disabled', true);
+          $("#btn_B").prop('disabled', true);
         
-        combination_arr.splice(rng_index, 1);
-        
-        displayChoices();
+          $("#end_msg").show();
+          //alert('nothing left');
+        }else{
+          var comb = comb_item.split(',');
+          id_a = comb[0];
+          id_b = comb[1];
+          
+          combination_arr.splice(rng_index, 1);
+          
+          displayChoices();
+        }
       }
 			
       function displayChoices() {
+      
+        var title_a = anime_dict[id_a].getElementsByTagName("series_title")[0].childNodes[0].nodeValue;
+        var title_b = anime_dict[id_b].getElementsByTagName("series_title")[0].childNodes[0].nodeValue;
+      
+      
         var a_lbl = document.getElementById('choice_a_lbl');
-        a_lbl.textContent = id_a;
+        a_lbl.textContent = id_a +': '+title_a;
         
         var b_lbl = document.getElementById('choice_b_lbl');
-        b_lbl.textContent = id_b;
+        b_lbl.textContent = id_b +': '+title_b;
       
+      }
+      
+      function updateRank(winner, loser){
+        var rank_winner = rank_dict[winner];
+        var rank_loser = rank_dict[loser];
+        
+        var exWinner = (1/(1+Math.pow(10,((rank_loser-rank_winner)/400))));
+        var exLoser = 1-exWinner;
+        //console.log(rank_winner);
+        rank_winner = rank_winner + 24 * (1 - exWinner);
+        //console.log(rank_winner);
+        
+        //console.log(rank_loser);
+        rank_loser = rank_loser + 24 * (0 - exWinner);
+        //console.log(rank_loser);
+        
+        rank_dict[winner] = rank_winner;
+        rank_dict[loser] = rank_loser;
+        
+      }
+      
+      function clicked_A(){
+        updateRank(id_a, id_b);
+        updateTable();
+      }
+      
+      function clicked_B(){
+        updateRank(id_b, id_a);
+        updateTable();
       }
 			
 		</script>
@@ -173,18 +227,23 @@
         </div>
       </div>
       
-      <div class="container" id="choice_div" style="display: flex;">
-        <div class="container" id="choice_a" style="flex: 1;">
-          <p id="choice_a_lbl">Choice A</p>
-          <input type="button" onclick="pickChoices()" value="Choice A" >
-          
+      <div id="toggle_div" style="display: none;">
+        <div id="end_msg" class="container" style="border-color: #1f5723;background-color: #afdbb3; display: none;">
+          <p>No more Combinations left.</p>
+          <p>If you reload you lose all progress.</p>
         </div>
-        <div class="container" id="choice_b" style="flex: 1;">
-          <p id="choice_b_lbl">Choice B</p>
-          <input type="button" onclick="" value="Choice A" disabled>
+        <div class="container" id="choice_div" style="display: flex;">
+          <div class="container" id="choice_a" style="flex: 1;">
+            <p id="choice_a_lbl">Choice A</p>
+            <input id="btn_A" type="button" onclick="clicked_A()" value="Choice A" >
+            
+          </div>
+          <div class="container" id="choice_b" style="flex: 1;">
+            <p id="choice_b_lbl">Choice B</p>
+            <input id="btn_B" type="button" onclick="clicked_B()" value="Choice B" >
+          </div>
         </div>
       </div>
-      
       
       <div class="container" id="content">
         <input id="updateTable" type="button" value="Aktualisiere Table" onclick="updateTable()">
