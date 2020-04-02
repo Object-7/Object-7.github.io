@@ -49,7 +49,21 @@
       
       var k = 24;
       
+      var datatable;
+      
+      var tableArr = [];
+      
 			function initialize() {
+        datatable = $('#contentTable').DataTable( {
+          columns: [
+            { title: "Name"},
+            { title: "Score"},
+            { title: "Details"},
+            { title: "Rank"}
+          ]
+        }
+        );
+        //datatable.row.add( [ 1, 2, 3, 4 ] ).draw();
       };
 			
 			function loadFile() {
@@ -114,24 +128,26 @@
         var score = animeElem.getElementsByTagName("my_score")[0].childNodes[0].nodeValue;
         var table = document.getElementById('bodyTable');
         
-        var row = table.insertRow(-1);
-        var ce1 = row.insertCell(0);
-        var ce2 = row.insertCell(1);
-        var ce3 = row.insertCell(2);
-        var ce4 = row.insertCell(3);
+        <!-- var row = table.insertRow(-1); -->
+        <!-- var ce1 = row.insertCell(0); -->
+        <!-- var ce2 = row.insertCell(1); -->
+        <!-- var ce3 = row.insertCell(2); -->
+        <!-- var ce4 = row.insertCell(3); -->
         
-        ce1.innerHTML = name;
-        ce2.innerHTML = score;
-        ce3.innerHTML = id;
-        ce4.innerHTML = rankElem;
+        <!-- ce1.innerHTML = name; -->
+        <!-- ce2.innerHTML = score; -->
+        <!-- ce3.innerHTML = id; -->
+        <!-- ce4.innerHTML = rankElem; -->
+        datatable.row.add( [ name, score, id, rankElem ] );
         
         //console.log(name+': '+ rankElem);
       }
       
       function updateTable() {
+        datatable.clear();
         //remove children of table
-        var table = document.getElementById('bodyTable');
-        table.textContent = '';
+        //var table = document.getElementById('bodyTable');
+        //table.textContent = '';
         //for( var i = 0; i < completed_list.length; i++) {
         //  addTableRow(completed_list[i]);
         //}
@@ -142,8 +158,10 @@
         }
         //rank_dict[47] = rank_dict[47]+1;
         
-        $('#contentTable').DataTable().clear();
-        $('#contentTable').DataTable();
+        //$('#contentTable').DataTable().clear();
+        //$('#contentTable').DataTable();
+        datatable.draw();
+        
         
         $("#toggle_div").show();
         
@@ -248,16 +266,16 @@
       <div class="container" id="content">
         <input id="updateTable" type="button" value="Aktualisiere Table" onclick="updateTable()">
         <table id="contentTable">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Score</th>
-              <th>Details</th>
-              <th>Rank</th>
-            </tr>
-          </thead>
-          <tbody id="bodyTable">
-          </tbody>
+          <!-- <thead> -->
+            <!-- <tr> -->
+              <!-- <th>Name</th> -->
+              <!-- <th>Score</th> -->
+              <!-- <th>Details</th> -->
+              <!-- <th>Rank</th> -->
+            <!-- </tr> -->
+          <!-- </thead> -->
+          <!-- <tbody id="bodyTable"> -->
+          <!-- </tbody> -->
         </table>
       
       </div>
