@@ -138,7 +138,7 @@
         <!-- ce2.innerHTML = score; -->
         <!-- ce3.innerHTML = id; -->
         <!-- ce4.innerHTML = rankElem; -->
-        datatable.row.add( [ name, score, id, rankElem ] );
+        datatable.row.add( [ name, score, "<a href='https://myanimelist.net/anime/"+id+"' target='_blank'>Link to Details</a>", rankElem ] );
         
         //console.log(name+': '+ rankElem);
       }
@@ -199,8 +199,14 @@
         var a_lbl = document.getElementById('choice_a_lbl');
         a_lbl.textContent = id_a +': '+title_a;
         
+        var link_a = document.getElementById('link_a');
+        link_a.href = 'https://myanimelist.net/anime/'+id_a;
+        
         var b_lbl = document.getElementById('choice_b_lbl');
         b_lbl.textContent = id_b +': '+title_b;
+        
+        var link_b = document.getElementById('link_b');
+        link_b.href = 'https://myanimelist.net/anime/'+id_b;
       
       }
       
@@ -235,11 +241,12 @@
 			
 		</script>
     <div class="container" id="title_div">
-      <p>Hello World</p>
+      <p>Hello World</p><span>Elo Ranking Test</span>
     </div>
     <div id="wrapper">
       <div class="container" >
         <div id="input_div">
+          <span>Upload XML export from MAL</span>
           <input id="inputXml" type="file" accept="text/xml" onchange="loadFile()"> 
           <!-- <input id="inputSubmit" type="button" value="Datei laden" onclick="loadFile()"> -->
         </div>
@@ -253,11 +260,13 @@
         <div class="container" id="choice_div" style="display: flex;">
           <div class="container" id="choice_a" style="flex: 1;">
             <p id="choice_a_lbl">Choice A</p>
+            <p><a href="" id="link_a" target="_blank">Link Choice A</a></p>
             <input id="btn_A" type="button" onclick="clicked_A()" value="Choice A" >
             
           </div>
           <div class="container" id="choice_b" style="flex: 1;">
             <p id="choice_b_lbl">Choice B</p>
+            <p><a href="" id="link_b" target="_blank">Link Choice B</a></p>
             <input id="btn_B" type="button" onclick="clicked_B()" value="Choice B" >
           </div>
         </div>
