@@ -1,7 +1,7 @@
 {
 "companyName": "DefaultCompany",
 "productName": "Othello-PK-Edition",
-"productVersion": "0.1",
+"productVersion": "0.3",
 "dataUrl": "OthelloWebGL.data.unityweb",
 "wasmCodeUrl": "OthelloWebGL.wasm.code.unityweb",
 "wasmFrameworkUrl": "OthelloWebGL.wasm.framework.unityweb",
